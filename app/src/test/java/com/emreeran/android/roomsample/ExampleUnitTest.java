@@ -1,4 +1,4 @@
-package com.emreeran.android.roomexample;
+package com.emreeran.android.roomsample;
 
 import org.junit.Test;
 

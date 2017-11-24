@@ -1,8 +1,8 @@
-package com.emreeran.android.roomexample.db;
+package com.emreeran.android.roomsample.db;
 
 import android.arch.persistence.room.TypeConverter;
 
-import com.emreeran.android.roomexample.vo.UserRelationship;
+import com.emreeran.android.roomsample.vo.UserRelationship;
 
 /**
  * Created by Emre Eran on 24.11.2017.

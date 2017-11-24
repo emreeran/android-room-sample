@@ -1,13 +1,13 @@
-package com.emreeran.android.roomexample.db;
+package com.emreeran.android.roomsample.db;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 
-import com.emreeran.android.roomexample.vo.Like;
-import com.emreeran.android.roomexample.vo.Post;
-import com.emreeran.android.roomexample.vo.User;
-import com.emreeran.android.roomexample.vo.UserRelationship;
+import com.emreeran.android.roomsample.vo.Like;
+import com.emreeran.android.roomsample.vo.Post;
+import com.emreeran.android.roomsample.vo.User;
+import com.emreeran.android.roomsample.vo.UserRelationship;
 
 /**
  * Created by Emre Eran on 24.11.2017.

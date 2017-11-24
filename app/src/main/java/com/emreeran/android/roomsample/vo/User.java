@@ -1,4 +1,4 @@
-package com.emreeran.android.roomexample.vo;
+package com.emreeran.android.roomsample.vo;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;

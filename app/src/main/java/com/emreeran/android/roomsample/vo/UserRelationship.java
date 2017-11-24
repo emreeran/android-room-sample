@@ -1,4 +1,4 @@
-package com.emreeran.android.roomexample.vo;
+package com.emreeran.android.roomsample.vo;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
@@ -8,7 +8,7 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.TypeConverters;
 import android.support.annotation.NonNull;
 
-import com.emreeran.android.roomexample.db.UserRelationshipStatusConverter;
+import com.emreeran.android.roomsample.db.UserRelationshipStatusConverter;
 
 import java.util.Date;
 import java.util.UUID;

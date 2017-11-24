@@ -1,4 +1,4 @@
-package com.emreeran.android.roomexample.db;
+package com.emreeran.android.roomsample.db;
 
 import android.arch.persistence.room.TypeConverter;
 

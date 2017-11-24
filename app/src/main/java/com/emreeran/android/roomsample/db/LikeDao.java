@@ -1,10 +1,10 @@
-package com.emreeran.android.roomexample.db;
+package com.emreeran.android.roomsample.db;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 
-import com.emreeran.android.roomexample.vo.Like;
+import com.emreeran.android.roomsample.vo.Like;
 
 /**
  * Created by Emre Eran on 24.11.2017.
