@@ -16,11 +16,11 @@ import com.emreeran.android.roomsample.vo.User;
 
 import java.util.List;
 
-import io.reactivex.Completable;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.operators.completable.CompletableFromAction;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -53,15 +53,13 @@ public class MainActivity extends AppCompatActivity {
         final RecyclerView recyclerView = findViewById(R.id.users);
 
         final UserDao userDao = mDb.userDao();
-        Completable.fromCallable(() -> {
+        new CompletableFromAction(() -> {
             User alice = new User("Alice");
             User bob = new User("Bob");
             User charlie = new User("Charlie");
             User dave = new User("Dave");
             User erin = new User("Erin");
             userDao.insertAll(alice, bob, charlie, dave, erin);
-
-            return Completable.complete();
         })
                 .andThen(userDao.listAll())
                 .subscribeOn(Schedulers.io())
