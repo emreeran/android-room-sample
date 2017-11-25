@@ -35,10 +35,11 @@ public class Like {
     @ColumnInfo(name = "likePostId")
     public String postId;
 
+    @NonNull
     @ColumnInfo(name = "likeCreatedAt")
     public Date createdAt;
 
-    public Like(String id, String userId, String postId, Date createdAt) {
+    public Like(@NonNull String id, String userId, String postId, @NonNull Date createdAt) {
         this.id = id;
         this.userId = userId;
         this.postId = postId;

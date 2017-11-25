@@ -16,7 +16,10 @@ import java.util.UUID;
 @Entity(tableName = "posts",
         primaryKeys = "postId",
         foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "userId", childColumns = "postUserId")},
-        indices = {@Index(value = "postUserId")}
+        indices = {
+                @Index(value = "postUserId"),
+                @Index(value = {"postId", "postUserId"}, unique = true, name = "postUserIndex")
+        }
 )
 public class Post {
     @NonNull
@@ -26,13 +29,15 @@ public class Post {
     @ColumnInfo(name = "postContent")
     public final String content;
 
+    @NonNull
     @ColumnInfo(name = "postUserId")
     public final String userId;
 
+    @NonNull
     @ColumnInfo(name = "postCreatedAt")
     public final Date createdAt;
 
-    public Post(String id, String content, String userId, Date createdAt) {
+    public Post(@NonNull String id, String content, @NonNull String userId, @NonNull Date createdAt) {
         this.id = id;
         this.content = content;
         this.userId = userId;
@@ -40,7 +45,7 @@ public class Post {
     }
 
     @Ignore
-    public Post(String content, String userId) {
+    public Post(String content, @NonNull String userId) {
         this.id = UUID.randomUUID().toString();
         this.content = content;
         this.userId = userId;

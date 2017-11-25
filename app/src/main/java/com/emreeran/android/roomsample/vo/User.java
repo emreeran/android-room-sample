@@ -14,7 +14,10 @@ import java.util.UUID;
  */
 @Entity(tableName = "users",
         primaryKeys = {"userId"},
-        indices = {@Index(value = "userId", unique = true)}
+        indices = {
+                @Index(value = "userId", unique = true),
+                @Index(value = "userName", unique = true)
+        }
 )
 public class User {
     @NonNull
@@ -24,10 +27,11 @@ public class User {
     @ColumnInfo(name = "userName")
     public final String name;
 
+    @NonNull
     @ColumnInfo(name = "userCreatedAt")
     public final Date createdAt;
 
-    public User(String id, String name, Date createdAt) {
+    public User(@NonNull String id, String name, @NonNull Date createdAt) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;

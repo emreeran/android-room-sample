@@ -32,9 +32,11 @@ public class UserRelationship {
     @ColumnInfo(name = "userRelationshipId")
     public String id;
 
+    @NonNull
     @ColumnInfo(name = "userRelationshipFollowerId")
     public String followerId;
 
+    @NonNull
     @ColumnInfo(name = "userRelationshipFollowedId")
     public String followedId;
 
@@ -42,10 +44,12 @@ public class UserRelationship {
     @ColumnInfo(name = "userRelationshipStatus")
     public Status status;
 
+    @NonNull
     @ColumnInfo(name = "userRelationshipCreatedAt")
     public Date createdAt;
 
-    public UserRelationship(String id, String followerId, String followedId, Status status, Date createdAt) {
+    public UserRelationship(@NonNull String id, @NonNull String followerId, @NonNull String followedId, Status status, @NonNull Date
+            createdAt) {
         this.id = id;
         this.followerId = followerId;
         this.followedId = followedId;
@@ -54,7 +58,7 @@ public class UserRelationship {
     }
 
     @Ignore
-    public UserRelationship(String followerId, String followedId, Status status) {
+    public UserRelationship(@NonNull String followerId, @NonNull String followedId, Status status) {
         this.id = UUID.randomUUID().toString();
         this.followerId = followerId;
         this.followedId = followedId;
