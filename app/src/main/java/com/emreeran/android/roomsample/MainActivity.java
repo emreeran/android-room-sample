@@ -92,7 +92,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public UserHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new UserHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent, false));
+            return new UserHolder(
+                    LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.user_item, parent, false)
+            );
         }
 
         @Override
