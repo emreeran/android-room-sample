@@ -54,4 +54,14 @@ public class Like {
         this.postId = postId;
         this.createdAt = new Date();
     }
+
+    @Override
+    public String toString() {
+        return "Like{" +
+                "id='" + id + '\'' +
+                ", userId='" + userId + '\'' +
+                ", postId='" + postId + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }
