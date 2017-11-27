@@ -29,10 +29,13 @@ public class PostWithLikesAndUser {
     public User user;
 
 //    @Embedded
-//    public List<LikeUser> likes;
+//    public List<LikeWithUser> likes;
 
     @Relation(entity = Like.class, entityColumn = "LikePostId", parentColumn = "PostId")
     public List<Like> likes;
+
+//    @Relation(entity = Like.class, entityColumn = "LikePostId", parentColumn = "PostId")
+//    public List<LikeWithUser> likes;
 
     public PostWithLikesAndUser() {
     }

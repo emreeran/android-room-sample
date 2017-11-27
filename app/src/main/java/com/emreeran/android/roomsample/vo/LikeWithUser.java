@@ -10,10 +10,16 @@ import java.util.Date;
  * Created by Emre Eran on 27.11.2017.
  */
 
-public class LikeUser {
+public class LikeWithUser {
     @NonNull
     @ColumnInfo(name = "LikeId")
     public String id;
+
+    @ColumnInfo(name = "LikePostId")
+    public String postId;
+
+    @ColumnInfo(name = "LikeUserId")
+    public String userId;
 
     @NonNull
     @ColumnInfo(name = "LikeCreatedAt")
@@ -22,9 +28,6 @@ public class LikeUser {
     @Embedded(prefix = "Like")
     public User user;
 
-    public LikeUser(@NonNull String id, @NonNull Date createdAt, User user) {
-        this.id = id;
-        this.createdAt = createdAt;
-        this.user = user;
+    public LikeWithUser() {
     }
 }
