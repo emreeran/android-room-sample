@@ -21,6 +21,8 @@ public abstract class DiffListAdapter<T, VH extends RecyclerView.ViewHolder>
     private List<T> mItems;
     private int mDataVersion = 0;
 
+    private OnItemsReplacedListener mOnItemsReplacedListener;
+
     protected abstract boolean areItemsTheSame(T oldItem, T newItem);
 
     protected abstract boolean areContentsTheSame(T oldItem, T newItem);
@@ -92,9 +94,19 @@ public abstract class DiffListAdapter<T, VH extends RecyclerView.ViewHolder>
                     }
                     mItems = update;
                     diffResult.dispatchUpdatesTo(DiffListAdapter.this);
-
+                    if (mOnItemsReplacedListener != null) {
+                        mOnItemsReplacedListener.onItemsReplaced();
+                    }
                 }
             }.execute();
         }
+    }
+
+    public interface OnItemsReplacedListener {
+        void onItemsReplaced();
+    }
+
+    public void setOnItemsReplacedListener(OnItemsReplacedListener onItemsReplacedListener) {
+        mOnItemsReplacedListener = onItemsReplacedListener;
     }
 }
