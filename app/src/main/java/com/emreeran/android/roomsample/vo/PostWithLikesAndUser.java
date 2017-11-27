@@ -26,7 +26,7 @@ public class PostWithLikesAndUser {
     public Date createdAt;
 
     @Embedded
-    public User user;
+    public UserWithFollowers user;
 
 //    @Embedded
 //    public List<LikeWithUser> likes;
