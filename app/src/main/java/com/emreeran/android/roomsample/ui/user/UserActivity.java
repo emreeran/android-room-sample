@@ -69,6 +69,7 @@ public class UserActivity extends AppCompatActivity {
         mPostList = findViewById(R.id.posts);
 
         mPostAdapter = new PostAdapter();
+        mPostAdapter.setOnItemsReplacedListener(() -> mPostList.getLayoutManager().scrollToPosition(0));
         mPostList.setAdapter(mPostAdapter);
 
         mPostButton.setOnClickListener(v -> post());
@@ -139,7 +140,6 @@ public class UserActivity extends AppCompatActivity {
                         mPostButton.setEnabled(true);
                         mPostInput.getText().clear();
                         hideSoftKeyboard();
-                        mPostList.scrollTo(0, 0);
                     }
 
                     @Override
@@ -185,16 +185,19 @@ public class UserActivity extends AppCompatActivity {
     class PostHolder extends RecyclerView.ViewHolder {
         TextView mContentView;
         TextView mDateView;
+        TextView mUserNameView;
 
         PostHolder(View itemView) {
             super(itemView);
             mContentView = itemView.findViewById(R.id.post_text);
             mDateView = itemView.findViewById(R.id.post_date);
+            mUserNameView = itemView.findViewById(R.id.post_user_name);
         }
 
         void setPost(PostWithLikesAndUser post) {
             mContentView.setText(post.content);
             mDateView.setText(mPostDateFormat.format(post.createdAt));
+            mUserNameView.setText(post.user.name);
         }
     }
 }
