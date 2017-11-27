@@ -16,10 +16,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.emreeran.android.roomsample.R;
+import com.emreeran.android.roomsample.db.LikeDao;
 import com.emreeran.android.roomsample.db.PostDao;
 import com.emreeran.android.roomsample.db.SampleDb;
 import com.emreeran.android.roomsample.db.UserDao;
 import com.emreeran.android.roomsample.ui.common.DiffListAdapter;
+import com.emreeran.android.roomsample.vo.Like;
 import com.emreeran.android.roomsample.vo.Post;
 import com.emreeran.android.roomsample.vo.PostWithLikesAndUser;
 import com.emreeran.android.roomsample.vo.User;
@@ -107,7 +109,12 @@ public class UserActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        postsWithLikesAndUsers -> mPostAdapter.replace(postsWithLikesAndUsers),
+                        postsWithLikesAndUsers -> {
+                            for (PostWithLikesAndUser item : postsWithLikesAndUsers) {
+                                Log.d(TAG, item.toString());
+                            }
+                            mPostAdapter.replace(postsWithLikesAndUsers);
+                        },
                         throwable -> Log.e(TAG, "Post list load failed.", throwable)
                 )
         );
@@ -186,18 +193,33 @@ public class UserActivity extends AppCompatActivity {
         TextView mContentView;
         TextView mDateView;
         TextView mUserNameView;
+        Button mLikeButton;
 
         PostHolder(View itemView) {
             super(itemView);
             mContentView = itemView.findViewById(R.id.post_text);
             mDateView = itemView.findViewById(R.id.post_date);
             mUserNameView = itemView.findViewById(R.id.post_user_name);
+            mLikeButton = itemView.findViewById(R.id.like_button);
         }
 
         void setPost(PostWithLikesAndUser post) {
             mContentView.setText(post.content);
             mDateView.setText(mPostDateFormat.format(post.createdAt));
             mUserNameView.setText(post.user.name);
+
+            mLikeButton.setOnClickListener(v -> {
+                mLikeButton.setEnabled(false);
+                LikeDao likeDao = SampleDb.getInstance(itemView.getContext()).likeDao();
+                Like like = new Like(mUser.id, post.id);
+                mDisposables.add(new CompletableFromAction(() -> likeDao.insert(like))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(() -> mLikeButton.setEnabled(true), throwable -> {
+                            mLikeButton.setEnabled(true);
+                            Log.e(TAG, "Like insert failed.", throwable);
+                        }));
+            });
         }
     }
 }
