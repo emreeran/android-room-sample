@@ -23,13 +23,15 @@ public interface PostDao {
 
     @Transaction
     @Query("SELECT p.PostId, p.PostContent, p.PostCreatedAt, " +
-            "u1.UserId, u1.UserName, u1.UserCreatedAt, " +
+            "postUser.UserId, postUser.UserName, postUser.UserCreatedAt, " +
             "l.LikeId, l.LikeCreatedAt," +
-            "u2.UserId as LikeUserId, u2.UserName as LikeUserName, u2.UserCreatedAt as LikeUserCreatedAt " +
+            "likeUser.UserId as LikeUserId, likeUser.UserName as LikeUserName, likeUser.UserCreatedAt as LikeUserCreatedAt " +
             "FROM posts as p " +
-            "JOIN users as u1 on u1.UserId = p.PostUserId " +
+            "JOIN users as postUser on postUser.UserId = p.PostUserId " +
+            "LEFT JOIN relationships as r on postUser.UserId = r.RelationshipFollowedId " +
+            "LEFT JOIN users as follower on r.RelationshipFollowerId = postUser.UserId " +
             "LEFT JOIN likes as l on l.LikePostId = p.PostId " +
-            "LEFT JOIN users as u2 on  u2.UserId = l.LikeUserId " +
+            "LEFT JOIN users as likeUser on  likeUser.UserId = l.LikeUserId " +
             "GROUP BY p.PostId " +
             "ORDER BY p.PostCreatedAt DESC")
     Flowable<List<PostWithLikesAndUser>> listPostsWithLikesAndUser();
