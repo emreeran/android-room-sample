@@ -30,6 +30,7 @@ public interface PostDao {
             "JOIN users as u1 on p.PostUserId = u1.UserId " +
             "LEFT JOIN likes as l " +
             "LEFT JOIN users as u2 on l.LikeUserId = u2.UserId " +
+            "GROUP BY p.PostId " +
             "ORDER BY p.PostCreatedAt DESC")
     Flowable<List<PostWithLikesAndUser>> listPostsWithLikesAndUser();
 }
