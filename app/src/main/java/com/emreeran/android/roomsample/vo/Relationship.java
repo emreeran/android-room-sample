@@ -8,7 +8,7 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.TypeConverters;
 import android.support.annotation.NonNull;
 
-import com.emreeran.android.roomsample.db.UserRelationshipStatusConverter;
+import com.emreeran.android.roomsample.db.RelationshipStatusConverter;
 
 import java.util.Date;
 import java.util.UUID;
@@ -16,39 +16,40 @@ import java.util.UUID;
 /**
  * Created by Emre Eran on 24.11.2017.
  */
-@Entity(tableName = "userRelationships",
-        primaryKeys = "userRelationshipId",
+@Entity(tableName = "relationships",
+        primaryKeys = "RelationshipId",
         foreignKeys = {
-                @ForeignKey(entity = User.class, parentColumns = "userId", childColumns = "userRelationshipFollowerId"),
-                @ForeignKey(entity = User.class, parentColumns = "userId", childColumns = "userRelationshipFollowedId")
+                @ForeignKey(entity = User.class, parentColumns = "UserId", childColumns = "RelationshipFollowerId"),
+                @ForeignKey(entity = User.class, parentColumns = "UserId", childColumns = "RelationshipFollowedId")
         },
         indices = {
-                @Index(value = "userRelationshipFollowerId"),
-                @Index(value = {"userRelationshipFollowerId", "userRelationshipFollowedId"}, unique = true, name = "userRelationshipFollowIndex")
+                @Index(value = "RelationshipFollowerId"),
+                @Index(value = "RelationshipFollowedId"),
+                @Index(value = {"RelationshipFollowerId", "RelationshipFollowedId"}, unique = true, name = "RelationshipFollowIndex")
         }
 )
-public class UserRelationship {
+public class Relationship {
     @NonNull
-    @ColumnInfo(name = "userRelationshipId")
+    @ColumnInfo(name = "RelationshipId")
     public String id;
 
     @NonNull
-    @ColumnInfo(name = "userRelationshipFollowerId")
+    @ColumnInfo(name = "RelationshipFollowerId")
     public String followerId;
 
     @NonNull
-    @ColumnInfo(name = "userRelationshipFollowedId")
+    @ColumnInfo(name = "RelationshipFollowedId")
     public String followedId;
 
-    @TypeConverters(UserRelationshipStatusConverter.class)
-    @ColumnInfo(name = "userRelationshipStatus")
+    @TypeConverters(RelationshipStatusConverter.class)
+    @ColumnInfo(name = "RelationshipStatus")
     public Status status;
 
     @NonNull
-    @ColumnInfo(name = "userRelationshipCreatedAt")
+    @ColumnInfo(name = "RelationshipCreatedAt")
     public Date createdAt;
 
-    public UserRelationship(@NonNull String id, @NonNull String followerId, @NonNull String followedId, Status status, @NonNull Date
+    public Relationship(@NonNull String id, @NonNull String followerId, @NonNull String followedId, Status status, @NonNull Date
             createdAt) {
         this.id = id;
         this.followerId = followerId;
@@ -58,7 +59,7 @@ public class UserRelationship {
     }
 
     @Ignore
-    public UserRelationship(@NonNull String followerId, @NonNull String followedId, Status status) {
+    public Relationship(@NonNull String followerId, @NonNull String followedId, Status status) {
         this.id = UUID.randomUUID().toString();
         this.followerId = followerId;
         this.followedId = followedId;

@@ -13,22 +13,22 @@ import java.util.UUID;
  * Created by Emre Eran on 24.11.2017.
  */
 @Entity(tableName = "users",
-        primaryKeys = {"userId"},
+        primaryKeys = {"UserId"},
         indices = {
-                @Index(value = "userId", unique = true),
-                @Index(value = "userName", unique = true)
+                @Index(value = "UserId", unique = true),
+                @Index(value = "UserName", unique = true)
         }
 )
 public class User {
     @NonNull
-    @ColumnInfo(name = "userId")
+    @ColumnInfo(name = "UserId")
     public final String id;
 
-    @ColumnInfo(name = "userName")
+    @ColumnInfo(name = "UserName")
     public final String name;
 
     @NonNull
-    @ColumnInfo(name = "userCreatedAt")
+    @ColumnInfo(name = "UserCreatedAt")
     public final Date createdAt;
 
     public User(@NonNull String id, String name, @NonNull Date createdAt) {
@@ -42,5 +42,14 @@ public class User {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.createdAt = new Date();
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
     }
 }

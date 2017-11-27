@@ -4,7 +4,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 
-import com.emreeran.android.roomsample.vo.UserRelationship;
+import com.emreeran.android.roomsample.vo.Relationship;
 
 /**
  * Created by Emre Eran on 24.11.2017.
@@ -12,5 +12,5 @@ import com.emreeran.android.roomsample.vo.UserRelationship;
 @Dao
 public interface UserRelationshipDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(UserRelationship userRelationship);
+    void insert(Relationship userRelationship);
 }

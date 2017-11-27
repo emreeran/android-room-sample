@@ -14,27 +14,27 @@ import java.util.UUID;
  * Created by Emre Eran on 24.11.2017.
  */
 @Entity(tableName = "posts",
-        primaryKeys = "postId",
-        foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "userId", childColumns = "postUserId")},
+        primaryKeys = "PostId",
+        foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "UserId", childColumns = "PostUserId")},
         indices = {
-                @Index(value = "postUserId"),
-                @Index(value = {"postId", "postUserId"}, unique = true, name = "postUserIndex")
+                @Index(value = "PostUserId"),
+                @Index(value = {"PostId", "PostUserId"}, unique = true, name = "PostUserIndex")
         }
 )
 public class Post {
     @NonNull
-    @ColumnInfo(name = "postId")
+    @ColumnInfo(name = "PostId")
     public final String id;
 
-    @ColumnInfo(name = "postContent")
+    @ColumnInfo(name = "PostContent")
     public final String content;
 
     @NonNull
-    @ColumnInfo(name = "postUserId")
+    @ColumnInfo(name = "PostUserId")
     public final String userId;
 
     @NonNull
-    @ColumnInfo(name = "postCreatedAt")
+    @ColumnInfo(name = "PostCreatedAt")
     public final Date createdAt;
 
     public Post(@NonNull String id, String content, @NonNull String userId, @NonNull Date createdAt) {

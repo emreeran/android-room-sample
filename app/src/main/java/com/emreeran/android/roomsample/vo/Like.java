@@ -14,30 +14,30 @@ import java.util.UUID;
  * Created by Emre Eran on 24.11.2017.
  */
 @Entity(tableName = "likes",
-        primaryKeys = "likeId",
+        primaryKeys = "LikeId",
         foreignKeys = {
-                @ForeignKey(entity = User.class, parentColumns = "userId", childColumns = "likeUserId"),
-                @ForeignKey(entity = Post.class, parentColumns = "postId", childColumns = "likePostId")
+                @ForeignKey(entity = User.class, parentColumns = "UserId", childColumns = "LikeUserId"),
+                @ForeignKey(entity = Post.class, parentColumns = "PostId", childColumns = "LikePostId")
         },
         indices = {
-                @Index(value = "likePostId"),
-                @Index(value = {"likeUserId", "likePostId"}, unique = true, name = "likeUserPostIndex")
+                @Index(value = "LikePostId"),
+                @Index(value = {"LikeUserId", "LikePostId"}, unique = true, name = "LikeUserPostIndex")
         }
 )
 
 public class Like {
     @NonNull
-    @ColumnInfo(name = "likeId")
+    @ColumnInfo(name = "LikeId")
     public String id;
 
-    @ColumnInfo(name = "likeUserId")
+    @ColumnInfo(name = "LikeUserId")
     public String userId;
 
-    @ColumnInfo(name = "likePostId")
+    @ColumnInfo(name = "LikePostId")
     public String postId;
 
     @NonNull
-    @ColumnInfo(name = "likeCreatedAt")
+    @ColumnInfo(name = "LikeCreatedAt")
     public Date createdAt;
 
     public Like(@NonNull String id, String userId, String postId, @NonNull Date createdAt) {

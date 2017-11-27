@@ -19,7 +19,7 @@ public interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(User user);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(User... user);
 
     @Query("SELECT * FROM users WHERE users.userId = :id LIMIT 1")
