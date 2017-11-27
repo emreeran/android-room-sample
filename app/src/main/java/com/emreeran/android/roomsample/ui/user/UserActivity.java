@@ -18,15 +18,18 @@ import android.widget.TextView;
 import com.emreeran.android.roomsample.R;
 import com.emreeran.android.roomsample.db.LikeDao;
 import com.emreeran.android.roomsample.db.PostDao;
+import com.emreeran.android.roomsample.db.RelationshipDao;
 import com.emreeran.android.roomsample.db.SampleDb;
 import com.emreeran.android.roomsample.db.UserDao;
 import com.emreeran.android.roomsample.ui.common.DiffListAdapter;
 import com.emreeran.android.roomsample.vo.Like;
 import com.emreeran.android.roomsample.vo.Post;
 import com.emreeran.android.roomsample.vo.PostWithLikesAndUser;
+import com.emreeran.android.roomsample.vo.Relationship;
 import com.emreeran.android.roomsample.vo.User;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.CompletableObserver;
@@ -43,6 +46,8 @@ import io.reactivex.schedulers.Schedulers;
 
 public class UserActivity extends AppCompatActivity {
     private static final String TAG = UserActivity.class.getName();
+
+    private String mUserId;
 
     private CompositeDisposable mDisposables;
 
@@ -63,6 +68,12 @@ public class UserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+        if (getIntent().getExtras() != null && getIntent().getExtras().getString("userId") != null) {
+            mUserId = getIntent().getExtras().getString("userId");
+        } else {
+            throw new IllegalArgumentException("User activity needs a user id.");
+        }
+
         mDisposables = new CompositeDisposable();
 
         mUserName = findViewById(R.id.user_name);
@@ -71,7 +82,11 @@ public class UserActivity extends AppCompatActivity {
         mPostList = findViewById(R.id.posts);
 
         mPostAdapter = new PostAdapter();
-        mPostAdapter.setOnItemsReplacedListener(() -> mPostList.getLayoutManager().scrollToPosition(0));
+        mPostAdapter.setOnItemsReplacedListener((oldSize, newSize) -> {
+            if (oldSize != newSize) {
+                mPostList.getLayoutManager().scrollToPosition(0);
+            }
+        });
         mPostList.setAdapter(mPostAdapter);
 
         mPostButton.setOnClickListener(v -> post());
@@ -82,8 +97,7 @@ public class UserActivity extends AppCompatActivity {
         super.onStart();
 
         UserDao userDao = SampleDb.getInstance(this).userDao();
-        String userId = getIntent().getExtras().getString("userId");
-        userDao.findById(userId)
+        userDao.findById(mUserId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new SingleObserver<User>() {
@@ -167,6 +181,15 @@ public class UserActivity extends AppCompatActivity {
         }
     }
 
+    private Relationship containsFollower(final List<Relationship> items, String followerId) {
+        for (Relationship item : items) {
+            if (item.followerId.equals(followerId)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     class PostAdapter extends DiffListAdapter<PostWithLikesAndUser, PostHolder> {
         @Override
         protected boolean areItemsTheSame(PostWithLikesAndUser oldItem, PostWithLikesAndUser newItem) {
@@ -175,7 +198,7 @@ public class UserActivity extends AppCompatActivity {
 
         @Override
         protected boolean areContentsTheSame(PostWithLikesAndUser oldItem, PostWithLikesAndUser newItem) {
-            return oldItem.content.equals(newItem.content);
+            return oldItem.equals(newItem);
         }
 
         @Override
@@ -193,25 +216,39 @@ public class UserActivity extends AppCompatActivity {
         TextView mContentView;
         TextView mDateView;
         TextView mUserNameView;
+        TextView mLikeCountView;
+        TextView mFollowerCountView;
         Button mLikeButton;
+        Button mFollowButton;
 
         PostHolder(View itemView) {
             super(itemView);
             mContentView = itemView.findViewById(R.id.post_text);
             mDateView = itemView.findViewById(R.id.post_date);
             mUserNameView = itemView.findViewById(R.id.post_user_name);
+            mLikeCountView = itemView.findViewById(R.id.like_count);
+            mFollowerCountView = itemView.findViewById(R.id.follower_count);
             mLikeButton = itemView.findViewById(R.id.like_button);
+            mFollowButton = itemView.findViewById(R.id.follow_button);
         }
 
         void setPost(PostWithLikesAndUser post) {
             mContentView.setText(post.content);
             mDateView.setText(mPostDateFormat.format(post.createdAt));
             mUserNameView.setText(post.user.name);
+            int likeCount = post.likes.size();
+            String likeCountText;
+            if (likeCount == 1) {
+                likeCountText = likeCount + " Like";
+            } else {
+                likeCountText = likeCount + " Likes";
+            }
+            mLikeCountView.setText(likeCountText);
 
             mLikeButton.setOnClickListener(v -> {
                 mLikeButton.setEnabled(false);
                 LikeDao likeDao = SampleDb.getInstance(itemView.getContext()).likeDao();
-                Like like = new Like(mUser.id, post.id);
+                Like like = new Like(mUserId, post.id);
                 mDisposables.add(new CompletableFromAction(() -> likeDao.insert(like))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -220,6 +257,48 @@ public class UserActivity extends AppCompatActivity {
                             Log.e(TAG, "Like insert failed.", throwable);
                         }));
             });
+
+            int followerCount = post.user.followers.size();
+            String followerCountText;
+            if (followerCount == 1) {
+                followerCountText = followerCount + " Follower";
+            } else {
+                followerCountText = followerCount + " Followers";
+            }
+            mFollowerCountView.setText(followerCountText);
+
+            if (post.user.id.equals(mUserId)) {
+                mFollowButton.setVisibility(View.INVISIBLE);
+            } else {
+                mFollowButton.setVisibility(View.VISIBLE);
+                RelationshipDao relationshipDao = SampleDb.getInstance(itemView.getContext()).relationshipDao();
+
+                Relationship follower = containsFollower(post.user.followers, mUserId);
+                if (follower != null) {
+                    mFollowButton.setText(R.string.unfollow);
+                    mFollowButton.setOnClickListener(v -> mDisposables.add(
+                            new CompletableFromAction(() -> relationshipDao.delete(follower))
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(() -> mFollowButton.setEnabled(true), throwable -> {
+                                        mFollowButton.setEnabled(true);
+                                        Log.e(TAG, "Unfollow request failed.");
+                                    })));
+                } else {
+                    mFollowButton.setText(R.string.follow);
+                    mFollowButton.setOnClickListener(v -> {
+                        mFollowButton.setEnabled(false);
+                        Relationship relationship = new Relationship(mUserId, post.user.id, Relationship.Status.PENDING);
+                        mDisposables.add(new CompletableFromAction(() -> relationshipDao.insert(relationship))
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(() -> mFollowButton.setEnabled(true), throwable -> {
+                                    mFollowButton.setEnabled(true);
+                                    Log.e(TAG, "Follow request failed.");
+                                }));
+                    });
+                }
+            }
         }
     }
 }
