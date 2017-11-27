@@ -37,7 +37,11 @@ public class PostWithLikesAndUser {
 //    @Relation(entity = Like.class, entityColumn = "LikePostId", parentColumn = "PostId")
 //    public List<LikeWithUser> likes;
 
-    public PostWithLikesAndUser() {
+
+    public PostWithLikesAndUser(@NonNull String id, String content, @NonNull Date createdAt) {
+        this.id = id;
+        this.content = content;
+        this.createdAt = createdAt;
     }
 
     @Override
