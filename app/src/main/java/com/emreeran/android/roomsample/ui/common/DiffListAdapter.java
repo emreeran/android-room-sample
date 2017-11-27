@@ -92,10 +92,12 @@ public abstract class DiffListAdapter<T, VH extends RecyclerView.ViewHolder>
                         // ignore update
                         return;
                     }
+                    int oldSize = mItems.size();
+                    int newSize = update.size();
                     mItems = update;
                     diffResult.dispatchUpdatesTo(DiffListAdapter.this);
                     if (mOnItemsReplacedListener != null) {
-                        mOnItemsReplacedListener.onItemsReplaced();
+                        mOnItemsReplacedListener.onItemsReplaced(oldSize, newSize);
                     }
                 }
             }.execute();
@@ -103,7 +105,7 @@ public abstract class DiffListAdapter<T, VH extends RecyclerView.ViewHolder>
     }
 
     public interface OnItemsReplacedListener {
-        void onItemsReplaced();
+        void onItemsReplaced(int oldSize, int newSize);
     }
 
     public void setOnItemsReplacedListener(OnItemsReplacedListener onItemsReplacedListener) {
