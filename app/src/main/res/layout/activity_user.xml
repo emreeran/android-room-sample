@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:paddingEnd="12dp"
     android:paddingLeft="12dp"
     android:paddingRight="12dp"
@@ -38,6 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/post_input"
+        android:paddingTop="8dp"
         app:layoutManager="LinearLayoutManager"
         tools:listitem="@layout/post_item"/>
 
