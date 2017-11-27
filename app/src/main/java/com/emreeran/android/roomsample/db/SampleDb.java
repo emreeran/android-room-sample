@@ -8,8 +8,8 @@ import android.content.Context;
 
 import com.emreeran.android.roomsample.vo.Like;
 import com.emreeran.android.roomsample.vo.Post;
-import com.emreeran.android.roomsample.vo.User;
 import com.emreeran.android.roomsample.vo.Relationship;
+import com.emreeran.android.roomsample.vo.User;
 
 /**
  * Created by Emre Eran on 24.11.2017.
@@ -36,5 +36,5 @@ public abstract class SampleDb extends RoomDatabase {
 
     abstract public LikeDao likeDao();
 
-    abstract public UserRelationshipDao userRelationship();
+    abstract public RelationshipDao relationshipDao();
 }
