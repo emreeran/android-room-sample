@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:paddingEnd="12dp"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
+    android:paddingStart="12dp">
+
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="12dp"/>
+
+    <EditText
+        android:id="@+id/post_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/user_name"
+        android:layout_toLeftOf="@+id/post_button"
+        android:layout_toStartOf="@+id/post_button"/>
+
+    <Button
+        android:id="@+id/post_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/user_name"
+        android:text="send"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/posts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/post_input"
+        app:layoutManager="LinearLayoutManager"
+        tools:listitem="@layout/post_item"/>
+
+</RelativeLayout>

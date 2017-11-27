@@ -1,6 +1,6 @@
-package com.emreeran.android.roomsample;
+package com.emreeran.android.roomsample.ui.main;
 
-import android.arch.persistence.room.Room;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -10,8 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.emreeran.android.roomsample.R;
 import com.emreeran.android.roomsample.db.SampleDb;
 import com.emreeran.android.roomsample.db.UserDao;
+import com.emreeran.android.roomsample.ui.common.DiffListAdapter;
+import com.emreeran.android.roomsample.ui.user.UserActivity;
 import com.emreeran.android.roomsample.vo.User;
 
 import java.util.List;
@@ -25,15 +28,18 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
-    private SampleDb mDb;
     private CompositeDisposable mDisposables;
+    private UserAdapter mUserAdapter;
+    private RecyclerView mUserList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDisposables = new CompositeDisposable();
-        mDb = Room.databaseBuilder(this, SampleDb.class, "sample.db").build();
+        mUserAdapter = new UserAdapter();
+        mUserList = findViewById(R.id.users);
+        mUserList.setAdapter(mUserAdapter);
         createAndListUsers();
     }
 
@@ -50,9 +56,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createAndListUsers() {
-        final RecyclerView recyclerView = findViewById(R.id.users);
-
-        final UserDao userDao = mDb.userDao();
+        final UserDao userDao = SampleDb.getInstance(this).userDao();
         new CompletableFromAction(() -> {
             User alice = new User("Alice");
             User bob = new User("Bob");
@@ -72,8 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onSuccess(List<User> users) {
-                        UserAdapter adapter = new UserAdapter(users);
-                        recyclerView.setAdapter(adapter);
+                        mUserAdapter.replace(users);
                     }
 
                     @Override
@@ -83,29 +86,26 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    class UserAdapter extends RecyclerView.Adapter<UserHolder> {
-        List<User> mItems;
+    class UserAdapter extends DiffListAdapter<User, UserHolder> {
 
-        UserAdapter(List<User> items) {
-            mItems = items;
+        @Override
+        protected boolean areItemsTheSame(User oldItem, User newItem) {
+            return oldItem.id.equals(newItem.id);
+        }
+
+        @Override
+        protected boolean areContentsTheSame(User oldItem, User newItem) {
+            return oldItem.name.equals(newItem.name);
         }
 
         @Override
         public UserHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new UserHolder(
-                    LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.user_item, parent, false)
-            );
+            return new UserHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(UserHolder holder, int position) {
-            holder.setItem(mItems.get(position));
-        }
-
-        @Override
-        public int getItemCount() {
-            return mItems.size();
+        protected void bind(User item, UserHolder holder) {
+            holder.setItem(item);
         }
     }
 
@@ -117,6 +117,11 @@ public class MainActivity extends AppCompatActivity {
         void setItem(User user) {
             TextView nameView = itemView.findViewById(R.id.name);
             nameView.setText(user.name);
+            itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, UserActivity.class);
+                intent.putExtra("userId", user.id);
+                startActivity(intent);
+            });
         }
     }
 }

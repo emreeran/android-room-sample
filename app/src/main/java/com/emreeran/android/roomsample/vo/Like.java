@@ -24,6 +24,7 @@ import java.util.UUID;
                 @Index(value = {"likeUserId", "likePostId"}, unique = true, name = "likeUserPostIndex")
         }
 )
+
 public class Like {
     @NonNull
     @ColumnInfo(name = "likeId")
