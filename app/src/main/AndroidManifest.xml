@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.user.UserActivity"/>
+        <activity android:name=".ui.post.PostActivity"/>
     </application>
 
 </manifest>

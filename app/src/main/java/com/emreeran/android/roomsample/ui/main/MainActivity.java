@@ -14,7 +14,7 @@ import com.emreeran.android.roomsample.R;
 import com.emreeran.android.roomsample.db.SampleDb;
 import com.emreeran.android.roomsample.db.UserDao;
 import com.emreeran.android.roomsample.ui.common.DiffListAdapter;
-import com.emreeran.android.roomsample.ui.user.UserActivity;
+import com.emreeran.android.roomsample.ui.post.PostActivity;
 import com.emreeran.android.roomsample.vo.User;
 
 import java.util.List;
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
             TextView nameView = itemView.findViewById(R.id.name);
             nameView.setText(user.name);
             itemView.setOnClickListener(v -> {
-                Intent intent = new Intent(MainActivity.this, UserActivity.class);
+                Intent intent = new Intent(MainActivity.this, PostActivity.class);
                 intent.putExtra("userId", user.id);
                 startActivity(intent);
             });

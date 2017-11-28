@@ -1,4 +1,4 @@
-package com.emreeran.android.roomsample.ui.user;
+package com.emreeran.android.roomsample.ui.post;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -44,8 +44,8 @@ import io.reactivex.schedulers.Schedulers;
  * Created by Emre Eran on 26.11.2017.
  */
 
-public class UserActivity extends AppCompatActivity {
-    private static final String TAG = UserActivity.class.getName();
+public class PostActivity extends AppCompatActivity {
+    private static final String TAG = PostActivity.class.getName();
 
     private String mUserId;
 
