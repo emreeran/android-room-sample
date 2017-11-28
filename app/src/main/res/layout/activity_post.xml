@@ -12,16 +12,35 @@
 
     <TextView
         android:id="@+id/user_name"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:padding="12dp"/>
+        android:padding="12dp"
+        android:textColor="@android:color/black"
+        tools:text="Alice"/>
+
+    <Button
+        android:id="@+id/user_info_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:text="User Info"
+        android:textAllCaps="false"/>
+
+    <TextView
+        android:id="@+id/create_post"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/user_name"
+        android:text="Create Post:"/>
 
     <EditText
         android:id="@+id/post_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/user_name"
+        android:layout_below="@+id/create_post"
+        android:layout_marginTop="12dp"
         android:layout_toLeftOf="@+id/post_button"
         android:layout_toStartOf="@+id/post_button"/>
 
@@ -29,9 +48,9 @@
         android:id="@+id/post_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/post_input"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/user_name"
         android:text="send"/>
 
     <android.support.v7.widget.RecyclerView

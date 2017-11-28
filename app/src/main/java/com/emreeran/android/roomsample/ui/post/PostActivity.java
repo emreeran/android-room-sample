@@ -1,6 +1,7 @@
 package com.emreeran.android.roomsample.ui.post;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import com.emreeran.android.roomsample.db.RelationshipDao;
 import com.emreeran.android.roomsample.db.SampleDb;
 import com.emreeran.android.roomsample.db.UserDao;
 import com.emreeran.android.roomsample.ui.common.DiffListAdapter;
+import com.emreeran.android.roomsample.ui.user.UserActivity;
 import com.emreeran.android.roomsample.vo.Like;
 import com.emreeran.android.roomsample.vo.Post;
 import com.emreeran.android.roomsample.vo.PostWithLikesAndUser;
@@ -54,6 +56,7 @@ public class PostActivity extends AppCompatActivity {
     private TextView mUserName;
     private EditText mPostInput;
     private Button mPostButton;
+    private Button mUserInfoButton;
     private RecyclerView mPostList;
 
     private PostAdapter mPostAdapter;
@@ -65,7 +68,7 @@ public class PostActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user);
+        setContentView(R.layout.activity_post);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         if (getIntent().getExtras() != null && getIntent().getExtras().getString("userId") != null) {
@@ -80,6 +83,7 @@ public class PostActivity extends AppCompatActivity {
         mPostInput = findViewById(R.id.post_input);
         mPostButton = findViewById(R.id.post_button);
         mPostList = findViewById(R.id.posts);
+        mUserInfoButton = findViewById(R.id.user_info_button);
 
         mPostAdapter = new PostAdapter();
         mPostAdapter.setOnItemsReplacedListener((oldSize, newSize) -> {
@@ -90,6 +94,11 @@ public class PostActivity extends AppCompatActivity {
         mPostList.setAdapter(mPostAdapter);
 
         mPostButton.setOnClickListener(v -> post());
+        mUserInfoButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, UserActivity.class);
+            intent.putExtra("userId", mUserId);
+            startActivity(intent);
+        });
     }
 
     @Override
@@ -123,12 +132,7 @@ public class PostActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        postsWithLikesAndUsers -> {
-                            for (PostWithLikesAndUser item : postsWithLikesAndUsers) {
-                                Log.d(TAG, item.toString());
-                            }
-                            mPostAdapter.replace(postsWithLikesAndUsers);
-                        },
+                        postsWithLikesAndUsers -> mPostAdapter.replace(postsWithLikesAndUsers),
                         throwable -> Log.e(TAG, "Post list load failed.", throwable)
                 )
         );

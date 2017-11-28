@@ -4,11 +4,14 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.TypeConverters;
 
+import com.emreeran.android.roomsample.vo.Relationship;
 import com.emreeran.android.roomsample.vo.User;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 /**
@@ -27,4 +30,10 @@ public interface UserDao {
 
     @Query("SELECT * FROM users")
     Single<List<User>> listAll();
+
+    @TypeConverters(RelationshipStatusConverter.class)
+    @Query("SELECT follower.UserId, follower.UserName, follower.UserCreatedAt FROM relationships as r " +
+            "JOIN users as follower on r.RelationshipFollowerId = follower.UserId " +
+            "WHERE r.RelationshipFollowedId = :userId AND r.RelationshipStatus = :status")
+    Flowable<List<User>> listFollowersByStatus(String userId, Relationship.Status status);
 }
