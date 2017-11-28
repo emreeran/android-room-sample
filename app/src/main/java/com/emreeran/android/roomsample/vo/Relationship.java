@@ -80,5 +80,16 @@ public class Relationship {
         public int getCode() {
             return mCode;
         }
+
+        @Override
+        public String toString() {
+            switch (mCode) {
+                case 0:
+                    return "Accepted";
+                case 1:
+                    return "Pending";
+            }
+            return "";
+        }
     }
 }

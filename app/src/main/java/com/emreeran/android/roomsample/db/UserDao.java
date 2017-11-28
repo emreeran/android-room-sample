@@ -6,6 +6,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.TypeConverters;
 
+import com.emreeran.android.roomsample.vo.Follower;
 import com.emreeran.android.roomsample.vo.Relationship;
 import com.emreeran.android.roomsample.vo.User;
 
@@ -31,9 +32,15 @@ public interface UserDao {
     @Query("SELECT * FROM users")
     Single<List<User>> listAll();
 
+    @Query("SELECT follower.UserId as id, follower.UserName as name, follower.UserCreatedAt as createdAt, r.RelationshipStatus as status " +
+            "FROM relationships as r " +
+            "JOIN users as follower on r.RelationshipFollowerId = follower.UserId " +
+            "WHERE r.RelationshipFollowedId = :userId")
+    Flowable<List<Follower>> listFollowers(String userId);
+
     @TypeConverters(RelationshipStatusConverter.class)
     @Query("SELECT follower.UserId, follower.UserName, follower.UserCreatedAt FROM relationships as r " +
             "JOIN users as follower on r.RelationshipFollowerId = follower.UserId " +
             "WHERE r.RelationshipFollowedId = :userId AND r.RelationshipStatus = :status")
-    Flowable<List<User>> listFollowersByStatus(String userId, Relationship.Status status);
+    Flowable<List<User>> listFollowerUsersByStatus(String userId, Relationship.Status status);
 }

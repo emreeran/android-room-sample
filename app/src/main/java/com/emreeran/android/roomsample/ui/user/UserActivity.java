@@ -14,8 +14,8 @@ import com.emreeran.android.roomsample.R;
 import com.emreeran.android.roomsample.db.SampleDb;
 import com.emreeran.android.roomsample.db.UserDao;
 import com.emreeran.android.roomsample.ui.common.DiffListAdapter;
+import com.emreeran.android.roomsample.vo.Follower;
 import com.emreeran.android.roomsample.vo.Relationship;
-import com.emreeran.android.roomsample.vo.User;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -52,12 +52,10 @@ public class UserActivity extends AppCompatActivity {
         }
 
         UserDao userDao = SampleDb.getInstance(this).userDao();
-        mDisposables.add(userDao.listFollowersByStatus(mUserId, Relationship.Status.PENDING)
+        mDisposables.add(userDao.listFollowers(mUserId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(users -> {
-                    mFollowerAdapter.replace(users);
-                })
+                .subscribe(followers -> mFollowerAdapter.replace(followers))
         );
     }
 
@@ -67,19 +65,19 @@ public class UserActivity extends AppCompatActivity {
         mDisposables.clear();
     }
 
-    class FollowerAdapter extends DiffListAdapter<User, UserHolder> {
+    class FollowerAdapter extends DiffListAdapter<Follower, UserHolder> {
         @Override
-        protected boolean areItemsTheSame(User oldItem, User newItem) {
+        protected boolean areItemsTheSame(Follower oldItem, Follower newItem) {
             return oldItem.id.equals(newItem.id);
         }
 
         @Override
-        protected boolean areContentsTheSame(User oldItem, User newItem) {
+        protected boolean areContentsTheSame(Follower oldItem, Follower newItem) {
             return oldItem.equals(newItem);
         }
 
         @Override
-        protected void bind(User item, UserHolder holder) {
+        protected void bind(Follower item, UserHolder holder) {
             holder.setUser(item);
         }
 
@@ -91,17 +89,24 @@ public class UserActivity extends AppCompatActivity {
 
     class UserHolder extends RecyclerView.ViewHolder {
         private TextView mNameView;
+        private TextView mStatusView;
         private Button mActionButton;
 
         UserHolder(View itemView) {
             super(itemView);
             mNameView = itemView.findViewById(R.id.follower_name);
+            mStatusView = itemView.findViewById(R.id.follower_status);
             mActionButton = itemView.findViewById(R.id.follower_action_button);
         }
 
-        public void setUser(User user) {
-            mNameView.setText(user.name);
-            mActionButton.setText("Accept");
+        public void setUser(Follower follower) {
+            mNameView.setText(follower.name);
+            mStatusView.setText(follower.status.toString());
+            if (follower.status == Relationship.Status.ACCEPTED) {
+                mActionButton.setText("Remove");
+            } else {
+                mActionButton.setText("Accept");
+            }
         }
     }
 }
