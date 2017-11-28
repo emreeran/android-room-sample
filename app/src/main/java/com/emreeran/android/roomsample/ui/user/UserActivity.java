@@ -104,8 +104,14 @@ public class UserActivity extends AppCompatActivity {
             mStatusView.setText(follower.status.toString());
             if (follower.status == Relationship.Status.ACCEPTED) {
                 mActionButton.setText("Remove");
+                mActionButton.setOnClickListener(v -> {
+
+                });
             } else {
                 mActionButton.setText("Accept");
+                mActionButton.setOnClickListener(v -> {
+
+                });
             }
         }
     }

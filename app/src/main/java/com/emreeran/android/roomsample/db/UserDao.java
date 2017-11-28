@@ -32,7 +32,8 @@ public interface UserDao {
     @Query("SELECT * FROM users")
     Single<List<User>> listAll();
 
-    @Query("SELECT follower.UserId as id, follower.UserName as name, follower.UserCreatedAt as createdAt, r.RelationshipStatus as status " +
+    @Query("SELECT follower.UserId as id, follower.UserName as name, follower.UserCreatedAt as createdAt, " +
+            "r.RelationshipStatus as status, r.RelationshipId as relationshipId " +
             "FROM relationships as r " +
             "JOIN users as follower on r.RelationshipFollowerId = follower.UserId " +
             "WHERE r.RelationshipFollowedId = :userId")

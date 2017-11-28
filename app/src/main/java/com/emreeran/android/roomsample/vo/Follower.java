@@ -15,6 +15,9 @@ public class Follower {
     @NonNull
     public String id;
 
+    @NonNull
+    public String relationshipId;
+
     public String name;
 
     @NonNull
