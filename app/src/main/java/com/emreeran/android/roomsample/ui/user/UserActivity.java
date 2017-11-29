@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.emreeran.android.roomsample.R;
+import com.emreeran.android.roomsample.db.RelationshipDao;
 import com.emreeran.android.roomsample.db.SampleDb;
 import com.emreeran.android.roomsample.db.UserDao;
 import com.emreeran.android.roomsample.ui.common.DiffListAdapter;
@@ -19,6 +21,7 @@ import com.emreeran.android.roomsample.vo.Relationship;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.internal.operators.completable.CompletableFromAction;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -27,10 +30,13 @@ import io.reactivex.schedulers.Schedulers;
 
 public class UserActivity extends AppCompatActivity {
 
+    private static final String TAG = UserActivity.class.getName();
+
     private String mUserId;
     private RecyclerView mFollowerList;
     private FollowerAdapter mFollowerAdapter;
     private CompositeDisposable mDisposables;
+    private RelationshipDao mRelationshipDao;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,6 +46,7 @@ public class UserActivity extends AppCompatActivity {
         mFollowerList = findViewById(R.id.follower_list);
         mFollowerAdapter = new FollowerAdapter();
         mFollowerList.setAdapter(mFollowerAdapter);
+        mRelationshipDao = SampleDb.getInstance(this).relationshipDao();
     }
 
     @Override
@@ -55,7 +62,10 @@ public class UserActivity extends AppCompatActivity {
         mDisposables.add(userDao.listFollowers(mUserId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(followers -> mFollowerAdapter.replace(followers))
+                .subscribe(
+                        followers -> mFollowerAdapter.replace(followers),
+                        throwable -> Log.e(TAG, "Follower list load failed.", throwable)
+                )
         );
     }
 
@@ -105,12 +115,31 @@ public class UserActivity extends AppCompatActivity {
             if (follower.status == Relationship.Status.ACCEPTED) {
                 mActionButton.setText("Remove");
                 mActionButton.setOnClickListener(v -> {
+                    mActionButton.setEnabled(false);
+                    mDisposables.add(new CompletableFromAction(() -> mRelationshipDao.deleteById(follower.relationshipId))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    () -> mActionButton.setEnabled(true),
+                                    throwable -> {
+                                        mActionButton.setEnabled(true);
+                                        Log.e(TAG, "Follower remove failed");
+                                    }));
 
                 });
             } else {
                 mActionButton.setText("Accept");
                 mActionButton.setOnClickListener(v -> {
-
+                    mActionButton.setEnabled(false);
+                    mDisposables.add(new CompletableFromAction(() -> mRelationshipDao.updateStatus(follower.relationshipId, Relationship.Status.ACCEPTED))
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    () -> mActionButton.setEnabled(true),
+                                    throwable -> {
+                                        mActionButton.setEnabled(true);
+                                        Log.e(TAG, "Accept follow failed", throwable);
+                                    }));
                 });
             }
         }
