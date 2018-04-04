@@ -15,7 +15,13 @@ import java.util.UUID;
  */
 @Entity(tableName = "posts",
         primaryKeys = "PostId",
-        foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "UserId", childColumns = "PostUserId")},
+        foreignKeys = {
+                @ForeignKey(
+                        entity = User.class,
+                        parentColumns = "UserId",
+                        childColumns = "PostUserId"
+                )
+        },
         indices = {
                 @Index(value = "PostUserId"),
                 @Index(value = {"PostId", "PostUserId"}, unique = true, name = "PostUserIndex")
