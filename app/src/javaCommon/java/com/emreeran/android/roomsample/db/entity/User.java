@@ -20,19 +20,16 @@ public class User {
     public final String image;
     public final Date createdAt;
 
-    @Ignore
-    public User(String name, @Nullable String image) {
-        this.id = 0;
-        this.name = name;
-        this.image = image;
-        this.createdAt = new Date();
-    }
-
     public User(int id, String name, @Nullable String image, Date createdAt) {
         this.id = id;
         this.name = name;
         this.image = image;
         this.createdAt = createdAt;
+    }
+
+    @Ignore
+    public User(String name, @Nullable String image) {
+        this(0, name, image, new Date());
     }
 
     @Override
