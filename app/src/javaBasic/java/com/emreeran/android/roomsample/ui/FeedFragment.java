@@ -1,5 +1,7 @@
 package com.emreeran.android.roomsample.ui;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,14 +13,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.emreeran.android.roomsample.R;
 import com.emreeran.android.roomsample.MainActivity;
+import com.emreeran.android.roomsample.R;
 import com.emreeran.android.roomsample.db.SampleDb;
 import com.emreeran.android.roomsample.db.dao.FeedDao;
-import com.emreeran.android.roomsample.db.vo.FeedItem;
+import com.emreeran.android.roomsample.db.dao.LikeDao;
+import com.emreeran.android.roomsample.db.entity.Like;
 
 import java.util.Objects;
+import java.util.concurrent.Callable;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -44,32 +49,64 @@ public class FeedFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Context context = getContext();
+
+        if (context == null) {
+            return;
+        }
 
         mDisposables = new CompositeDisposable();
+        SampleDb db = SampleDb.getInstance(context);
+
+        SharedPreferences prefs =
+                context.getSharedPreferences("android-room-sample", Context.MODE_PRIVATE);
+        int currentUserId = prefs.getInt("logged_in_as", -1);
 
         RecyclerView feedView = Objects.requireNonNull(getView()).findViewById(R.id.feed);
-
         DividerItemDecoration itemDecoration =
-                new DividerItemDecoration(Objects.requireNonNull(getContext()), DividerItemDecoration.VERTICAL);
+                new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
         Drawable divider = getResources().getDrawable(R.drawable.feed_divider);
         itemDecoration.setDrawable(divider);
         feedView.addItemDecoration(itemDecoration);
 
         FeedAdapter adapter = new FeedAdapter();
-        adapter.setOnItemClickListener(v -> {
+        mDisposables.add(adapter.getItemClickEvent().subscribe(postId -> {
             if (getActivity() != null) {
-                int itemPosition = feedView.getChildLayoutPosition(v);
-                FeedItem item = adapter.getListItem(itemPosition);
-                ((MainActivity) getActivity()).navigateToPostDetail(item.postWithUser.post.id);
+                ((MainActivity) getActivity()).navigateToPostDetail(postId);
             }
-        });
+        }));
+
+        LikeDao likeDao = db.likeDao();
+        mDisposables.add(adapter.getLikeClickEvent().subscribe(pair -> {
+                    int postId = pair.first;
+                    boolean isLiked = pair.second;
+
+                    if (isLiked) {
+                        Like like = new Like(currentUserId, postId);
+                        mDisposables.add(Completable.fromCallable((Callable<Void>) () -> {
+                                    likeDao.insert(like);
+                                    return null;
+                                }).subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe()
+                        );
+                    } else {
+                        mDisposables.add(Completable.fromCallable((Callable<Void>) () -> {
+                                    likeDao.deleteByUserIdAndPostId(currentUserId, postId);
+                                    return null;
+                                }).subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe()
+                        );
+                    }
+                })
+        );
+
         feedView.setAdapter(adapter);
 
-        SampleDb db = SampleDb.getInstance(getContext());
         FeedDao feedDao = db.feedDao();
-
         mDisposables.add(
-                Flowable.fromCallable(feedDao::listFeedItems)
+                Flowable.fromCallable(() -> feedDao.listFeedItems(currentUserId))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(adapter::replace)
