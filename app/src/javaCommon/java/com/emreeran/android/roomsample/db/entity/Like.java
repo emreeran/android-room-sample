@@ -1,5 +1,6 @@
 package com.emreeran.android.roomsample.db.entity;
 
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
@@ -14,19 +15,25 @@ import java.util.Date;
 @Entity(
         tableName = "likes",
         foreignKeys = {
-                @ForeignKey(entity = User.class, parentColumns = "id", childColumns = "userId"),
-                @ForeignKey(entity = Post.class, parentColumns = "id", childColumns = "postId")
+                @ForeignKey(entity = User.class, parentColumns = "id", childColumns = "user_id", onDelete = ForeignKey.CASCADE),
+                @ForeignKey(entity = Post.class, parentColumns = "id", childColumns = "post_id", onDelete = ForeignKey.CASCADE)
         },
         indices = {
-                @Index(value = "postId", name = "LikeUserIndex"),
-                @Index(value = {"userId", "postId"}, name = "UserPostIndex", unique = true)
+                @Index(value = "post_id", name = "LikeUserIndex"),
+                @Index(value = {"user_id", "post_id"}, name = "UserPostIndex", unique = true)
         }
 )
 public class Like {
     @PrimaryKey(autoGenerate = true)
     public final int id;
+
+    @ColumnInfo(name = "user_id", index = true)
     public final int userId;
+
+    @ColumnInfo(name = "post_id")
     public final int postId;
+
+    @ColumnInfo(name = "created_at")
     public final Date createdAt;
 
     @Ignore
