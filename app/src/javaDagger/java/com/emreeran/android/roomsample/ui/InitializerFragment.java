@@ -20,11 +20,9 @@ import com.emreeran.android.roomsample.db.dao.UserDao;
 import com.emreeran.android.roomsample.db.entity.User;
 import com.emreeran.android.roomsample.di.Injectable;
 
-import java.util.concurrent.Callable;
-
 import javax.inject.Inject;
 
-import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -69,15 +67,13 @@ public class InitializerFragment extends Fragment implements Injectable {
                 String name = nameEditText.getText().toString();
                 User user = new User(name, null);
                 mDisposables.add(
-                        Completable.fromCallable((Callable<Void>) () -> {
-                            mUserDao.insert(user);
-                            return null;
-                        }).subscribeOn(Schedulers.io())
+                        Single.fromCallable(() -> mUserDao.insert(user))
+                                .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(() -> {
+                                .subscribe((userId) -> {
                                     SharedPreferences prefs =
                                             getContext().getSharedPreferences("android-room-sample", Context.MODE_PRIVATE);
-                                    prefs.edit().putInt("logged_in_as", user.id).apply();
+                                    prefs.edit().putInt("logged_in_as", userId.intValue()).apply();
                                     mNavigationController.navigateToFeed();
                                 })
                 );

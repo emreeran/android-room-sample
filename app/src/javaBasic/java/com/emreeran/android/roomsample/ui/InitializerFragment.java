@@ -14,17 +14,16 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.emreeran.android.roomsample.R;
 import com.emreeran.android.roomsample.MainActivity;
-import com.emreeran.android.roomsample.db.SampleDb;
+import com.emreeran.android.roomsample.R;
 import com.emreeran.android.roomsample.db.DataInitializer;
+import com.emreeran.android.roomsample.db.SampleDb;
 import com.emreeran.android.roomsample.db.dao.UserDao;
 import com.emreeran.android.roomsample.db.entity.User;
 
 import java.util.Objects;
-import java.util.concurrent.Callable;
 
-import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -64,15 +63,13 @@ public class InitializerFragment extends Fragment {
                 String name = nameEditText.getText().toString();
                 User user = new User(name, null);
                 mDisposables.add(
-                        Completable.fromCallable((Callable<Void>) () -> {
-                            userDao.insert(user);
-                            return null;
-                        }).subscribeOn(Schedulers.io())
+                        Single.fromCallable(() -> userDao.insert(user))
+                                .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(() -> {
+                                .subscribe((userId) -> {
                                     SharedPreferences prefs =
                                             getContext().getSharedPreferences("android-room-sample", Context.MODE_PRIVATE);
-                                    prefs.edit().putInt("logged_in_as", user.id).apply();
+                                    prefs.edit().putInt("logged_in_as", userId.intValue()).apply();
                                     ((MainActivity) Objects.requireNonNull(getActivity())).navigateToFeed();
                                 })
                 );
