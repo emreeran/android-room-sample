@@ -40,11 +40,11 @@ public interface PostDao {
     @Transaction
     @Query("SELECT p.*, " +
             "c.id, c.content, c.userId, c.createdAt, " +
-            "l.id, l.userId, l.createdAt, " +
+            "l.id, l.user_id, l.created_at, " +
             "p_u.id as user_id, p_u.name as user_name, p_u.createdAt as user_createdAt " +
             "FROM posts as p " +
             "LEFT JOIN comments as c on p.id = c.postId " +
-            "LEFT JOIN likes as l on p.id = l.postId " +
+            "LEFT JOIN likes as l on p.id = l.post_id " +
             "LEFT JOIN users as p_u on p.userId = p_u.id " +
             "GROUP BY p.id ORDER BY p.createdAt DESC")
     LiveData<List<PostWithUserCommentsLikes>> listWithUserCommentsLikes();
