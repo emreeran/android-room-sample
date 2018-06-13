@@ -23,7 +23,7 @@ public class PostWithUserCommentsLikes {
     @Relation(parentColumn = "id", entityColumn = "postId", entity = Comment.class)
     public List<Comment> comments;
 
-    @Relation(parentColumn = "id", entityColumn = "postId", entity = Like.class)
+    @Relation(parentColumn = "id", entityColumn = "post_id", entity = Like.class)
     public List<Like> likes;
 
     public PostWithUserCommentsLikes(Post post, User user) {
