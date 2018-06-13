@@ -17,7 +17,7 @@ import io.reactivex.Single;
 @Dao
 public interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(User user);
+    long insert(User user);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<User> users);
