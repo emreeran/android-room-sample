@@ -23,9 +23,10 @@ public abstract class FeedDao {
     abstract List<CommentWithUser> listCommentsWithUserSync(int postId);
 
     @Query("SELECT l.*, " +
-            "u.id as user_id, u.name as user_name, u.image as user_image, u.createdAt as user_createdAt " +
-            "FROM likes as l JOIN users as u on u.id = userId WHERE postId = :postId")
-    abstract List<LikeWithUser> listLikeWithUserSync(int postId);
+            "u.id as user_id, u.name as user_name, u.image as user_image, u.createdAt as user_createdAt, " +
+            "CAST(CASE WHEN u.id = :userId THEN 1 ELSE 0 END as bit) as isLiked " +
+            "FROM likes as l JOIN users as u on u.id = user_id WHERE post_id = :postId")
+    abstract List<LikeWithUser> listLikeWithUserSync(int postId, int userId);
 
     @Query("SELECT p.*, " +
             "u.id as user_id, u.name as user_name, u.image as user_image, u.createdAt as user_createdAt " +
@@ -33,12 +34,12 @@ public abstract class FeedDao {
     abstract List<PostWithUser> listPostWithUserSync();
 
     @Transaction
-    public List<FeedItem> listFeedItems() {
+    public List<FeedItem> listFeedItems(int userId) {
         ArrayList<FeedItem> feedItems = new ArrayList<>();
         List<PostWithUser> posts = listPostWithUserSync();
         for (PostWithUser postWithUser : posts) {
             List<CommentWithUser> comments = listCommentsWithUserSync(postWithUser.post.id);
-            List<LikeWithUser> likes = listLikeWithUserSync(postWithUser.post.id);
+            List<LikeWithUser> likes = listLikeWithUserSync(postWithUser.post.id, userId);
             FeedItem feedItem = new FeedItem(postWithUser, comments, likes);
             feedItems.add(feedItem);
         }
