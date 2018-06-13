@@ -2,6 +2,7 @@ package com.emreeran.android.roomsample.db.entity
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.ForeignKey
+import android.arch.persistence.room.ForeignKey.CASCADE
 import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
 import java.util.*
@@ -11,7 +12,7 @@ import java.util.*
  */
 @Entity(tableName = "likes",
         foreignKeys = [
-            (ForeignKey(entity = User::class, parentColumns = ["id"], childColumns = ["userId"])),
+            (ForeignKey(entity = User::class, parentColumns = ["id"], childColumns = ["userId"], onDelete = CASCADE)),
             (ForeignKey(entity = Post::class, parentColumns = ["id"], childColumns = ["postId"]))],
         indices = [
             (Index(value = ["postId"], name = "LikePostIndex")),
