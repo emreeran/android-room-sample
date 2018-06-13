@@ -13,13 +13,16 @@ import java.util.Objects;
 public class LikeWithUser {
     public final int id;
     public final Date createdAt;
-    @Embedded(prefix = "like_user_")
+    @Embedded(prefix = "user_")
     public final User user;
+    public boolean isLiked;
 
-    public LikeWithUser(int id, Date createdAt, User user) {
+
+    public LikeWithUser(int id, Date createdAt, User user, boolean isLiked) {
         this.id = id;
         this.createdAt = createdAt;
         this.user = user;
+        this.isLiked = isLiked;
     }
 
     @Override
@@ -28,6 +31,7 @@ public class LikeWithUser {
                 "id=" + id +
                 ", createdAt=" + createdAt +
                 ", user=" + user +
+                ", isLiked=" + isLiked +
                 '}';
     }
 
@@ -37,12 +41,13 @@ public class LikeWithUser {
         if (o == null || getClass() != o.getClass()) return false;
         LikeWithUser that = (LikeWithUser) o;
         return id == that.id &&
+                isLiked == that.isLiked &&
                 Objects.equals(createdAt, that.createdAt) &&
                 Objects.equals(user, that.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, createdAt, user);
+        return Objects.hash(id, createdAt, user, isLiked);
     }
 }
